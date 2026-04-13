@@ -1,22 +1,68 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
+import {
+  IonButton,
+  IonCard,
+  IonCardContent,
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonText,
+  IonTitle,
+  IonToolbar,
+} from '@ionic/react';
+import { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { StoredUser, clearSession, getActiveUser } from '../auth/auth';
 import './Home.css';
 
 const Home: React.FC = () => {
+  const history = useHistory();
+  const [user, setUser] = useState<StoredUser | null>(null);
+
+  useEffect(() => {
+    const activeUser = getActiveUser();
+    if (!activeUser) {
+      history.replace('/login');
+      return;
+    }
+
+    setUser(activeUser);
+  }, [history]);
+
+  const handleLogout = (): void => {
+    clearSession();
+    history.replace('/login');
+  };
+
   return (
     <IonPage>
-      <IonHeader>
+      <IonHeader translucent>
         <IonToolbar>
-          <IonTitle>Blank</IonTitle>
+          <IonTitle>Home</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Blank</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <ExploreContainer />
+
+      <IonContent fullscreen className="home-content">
+        <div className="home-shell">
+          <IonCard className="home-card">
+            <IonCardContent>
+              <IonText>
+                <h1 className="home-title">You’re logged in</h1>
+              </IonText>
+
+              {user ? (
+                <IonText color="medium">
+                  <p className="home-subtitle">
+                    {user.name} ({user.email})
+                  </p>
+                </IonText>
+              ) : null}
+
+              <IonButton expand="block" onClick={handleLogout}>
+                Logout
+              </IonButton>
+            </IonCardContent>
+          </IonCard>
+        </div>
       </IonContent>
     </IonPage>
   );
