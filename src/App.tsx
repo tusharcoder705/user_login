@@ -1,11 +1,14 @@
 import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
+import { IonApp, IonRouterOutlet, setupIonicReact, IonSplitPane } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { getActiveUser } from './auth/auth';
 import PrivateRoute from './auth/PrivateRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import EnergyDashboard from './pages/EnergyDashboard';
+import AppMenu from './components/AppMenu';
+import ComingSoon from './pages/ComingSoon';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -42,22 +45,41 @@ setupIonicReact();
 const App: React.FC = () => (
   <IonApp>
     <IonReactRouter>
-      <IonRouterOutlet>
-        <Route exact path="/login">
-          <Login />
-        </Route>
-        <Route exact path="/signup">
-          <Signup />
-        </Route>
+      <IonSplitPane contentId="main">
+        <AppMenu />
+        <IonRouterOutlet id="main">
+          <Route exact path="/login">
+            <Login />
+          </Route>
+          <Route exact path="/signup">
+            <Signup />
+          </Route>
 
-        <PrivateRoute exact path="/home">
-          <Home />
-        </PrivateRoute>
+          <PrivateRoute exact path="/home">
+            <Home />
+          </PrivateRoute>
 
-        <Route exact path="/">
-          <Redirect to={getActiveUser() ? '/home' : '/login'} />
-        </Route>
-      </IonRouterOutlet>
+          <PrivateRoute exact path="/dashboard">
+            <EnergyDashboard />
+          </PrivateRoute>
+
+          <PrivateRoute exact path="/power">
+            <ComingSoon />
+          </PrivateRoute>
+
+          <PrivateRoute exact path="/feature3">
+            <ComingSoon />
+          </PrivateRoute>
+
+          <PrivateRoute exact path="/feature4">
+            <ComingSoon />
+          </PrivateRoute>
+
+          <Route exact path="/">
+            <Redirect to={getActiveUser() ? '/dashboard' : '/login'} />
+          </Route>
+        </IonRouterOutlet>
+      </IonSplitPane>
     </IonReactRouter>
   </IonApp>
 );

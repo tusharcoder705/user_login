@@ -48,6 +48,9 @@ const Home: React.FC = () => {
               <IonText>
                 <h1 className="home-title">You’re logged in</h1>
               </IonText>
+              <IonButton expand="block" shape="round" color="primary" onClick={() => history.push('/dashboard')} style={{ marginBottom: "1rem" }}>
+                View Energy Dashboard
+              </IonButton>
 
               {user ? (
                 <IonText color="medium">

@@ -1,17 +1,12 @@
 import {
   IonButton,
-  IonCard,
-  IonCardContent,
   IonContent,
-  IonHeader,
   IonInput,
   IonItem,
   IonLabel,
   IonNote,
   IonPage,
   IonText,
-  IonTitle,
-  IonToolbar,
 } from '@ionic/react';
 import { FormEvent, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -94,122 +89,121 @@ const Signup: React.FC = () => {
 
   return (
     <IonPage>
-      <IonHeader translucent>
-        <IonToolbar>
-          <IonTitle>Signup</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-
       <IonContent fullscreen className="auth-content">
         <div className="auth-shell">
-          <IonCard className="auth-card">
-            <IonCardContent>
-              <div className="auth-heading">
-                <h1>Create account</h1>
-                <p>Signup is stored locally (no backend).</p>
+          <div className="auth-form-container">
+            <div className="app-logo-placeholder">
+              <div className="logo-circle">
+                <span className="logo-text">OEE</span>
               </div>
+            </div>
 
-              <form onSubmit={handleSubmit} noValidate>
-                <IonItem className="input-item">
-                  <IonLabel position="stacked">Full Name</IonLabel>
-                  <IonInput
-                    type="text"
-                    autocomplete="name"
-                    placeholder="Your name"
-                    value={signupData.fullName}
-                    onIonInput={(event) =>
-                      setField('fullName', event.detail.value ?? '')
-                    }
-                    onIonBlur={() => markTouched('fullName')}
-                  />
-                </IonItem>
-                {touched.fullName && errors.fullName ? (
-                  <IonNote color="danger" className="inline-error">
-                    {errors.fullName}
-                  </IonNote>
-                ) : null}
+            <div className="auth-heading">
+              <h1>Create account</h1>
+              <p>Join us and get started</p>
+            </div>
 
-                <IonItem className="input-item">
-                  <IonLabel position="stacked">Email</IonLabel>
-                  <IonInput
-                    type="email"
-                    inputmode="email"
-                    autocomplete="email"
-                    placeholder="name@example.com"
-                    value={signupData.email}
-                    onIonInput={(event) =>
-                      setField('email', event.detail.value ?? '')
-                    }
-                    onIonBlur={() => markTouched('email')}
-                    clearInput
-                  />
-                </IonItem>
-                {touched.email && errors.email ? (
-                  <IonNote color="danger" className="inline-error">
-                    {errors.email}
-                  </IonNote>
-                ) : null}
-
-                <IonItem className="input-item">
-                  <IonLabel position="stacked">Password</IonLabel>
-                  <IonInput
-                    type="password"
-                    clearOnEdit={false}
-                    autocomplete="new-password"
-                    placeholder="Strong password"
-                    value={signupData.password}
-                    onIonInput={(event) =>
-                      setField('password', event.detail.value ?? '')
-                    }
-                    onIonBlur={() => markTouched('password')}
-                  />
-                </IonItem>
-                {touched.password && errors.password ? (
-                  <IonNote color="danger" className="inline-error">
-                    {errors.password}
-                  </IonNote>
-                ) : null}
-
-                <IonItem className="input-item">
-                  <IonLabel position="stacked">Confirm Password</IonLabel>
-                  <IonInput
-                    type="password"
-                    clearOnEdit={false}
-                    autocomplete="new-password"
-                    placeholder="Repeat password"
-                    value={signupData.confirmPassword}
-                    onIonInput={(event) =>
-                      setField('confirmPassword', event.detail.value ?? '')
-                    }
-                    onIonBlur={() => markTouched('confirmPassword')}
-                  />
-                </IonItem>
-                {touched.confirmPassword && errors.confirmPassword ? (
-                  <IonNote color="danger" className="inline-error">
-                    {errors.confirmPassword}
-                  </IonNote>
-                ) : null}
-
-                <div className="actions">
-                  <IonButton expand="block" type="submit">
-                    Create Account
-                  </IonButton>
-                </div>
-              </form>
-
-              {status ? (
-                <IonText color={statusColor} className="status-text">
-                  {status.text}
-                </IonText>
+            <form onSubmit={handleSubmit} noValidate className="auth-form">
+              <IonItem className="input-item" lines="none">
+                <IonLabel position="stacked" className="input-label">Full Name</IonLabel>
+                <IonInput
+                  type="text"
+                  autocomplete="name"
+                  placeholder="Your name"
+                  value={signupData.fullName}
+                  onIonInput={(event) =>
+                    setField('fullName', event.detail.value ?? '')
+                  }
+                  onIonBlur={() => markTouched('fullName')}
+                />
+              </IonItem>
+              {touched.fullName && errors.fullName ? (
+                <IonNote color="danger" className="inline-error">
+                  {errors.fullName}
+                </IonNote>
               ) : null}
 
-              <div className="link-row">
-                <IonButton routerLink="/login" fill="clear" size="small">
-                  Already have an account? Login
+              <IonItem className="input-item" lines="none">
+                <IonLabel position="stacked" className="input-label">Email</IonLabel>
+                <IonInput
+                  type="email"
+                  inputmode="email"
+                  autocomplete="email"
+                  placeholder="name@example.com"
+                  value={signupData.email}
+                  onIonInput={(event) =>
+                    setField('email', event.detail.value ?? '')
+                  }
+                  onIonBlur={() => markTouched('email')}
+                  clearInput
+                />
+              </IonItem>
+              {touched.email && errors.email ? (
+                <IonNote color="danger" className="inline-error">
+                  {errors.email}
+                </IonNote>
+              ) : null}
+
+              <IonItem className="input-item" lines="none">
+                <IonLabel position="stacked" className="input-label">Password</IonLabel>
+                <IonInput
+                  type="password"
+                  clearOnEdit={false}
+                  autocomplete="new-password"
+                  placeholder="Strong password"
+                  value={signupData.password}
+                  onIonInput={(event) =>
+                    setField('password', event.detail.value ?? '')
+                  }
+                  onIonBlur={() => markTouched('password')}
+                />
+              </IonItem>
+              {touched.password && errors.password ? (
+                <IonNote color="danger" className="inline-error">
+                  {errors.password}
+                </IonNote>
+              ) : null}
+
+              <IonItem className="input-item" lines="none">
+                <IonLabel position="stacked" className="input-label">Confirm Password</IonLabel>
+                <IonInput
+                  type="password"
+                  clearOnEdit={false}
+                  autocomplete="new-password"
+                  placeholder="Repeat password"
+                  value={signupData.confirmPassword}
+                  onIonInput={(event) =>
+                    setField('confirmPassword', event.detail.value ?? '')
+                  }
+                  onIonBlur={() => markTouched('confirmPassword')}
+                />
+              </IonItem>
+              {touched.confirmPassword && errors.confirmPassword ? (
+                <IonNote color="danger" className="inline-error">
+                  {errors.confirmPassword}
+                </IonNote>
+              ) : null}
+
+              <div className="actions">
+                <IonButton expand="block" type="submit" className="login-button">
+                  Create Account
                 </IonButton>
               </div>
-            </IonCardContent>
-          </IonCard>
+            </form>
+
+            {status ? (
+              <IonText color={statusColor} className="status-text text-center">
+                {status.text}
+              </IonText>
+            ) : null}
+
+            <div className="link-row">
+              <span className="no-account-text">Already have an account? </span>
+              <IonButton routerLink="/login" fill="clear" size="small" className="signup-button">
+                Sign In
+              </IonButton>
+            </div>
+          </div>
         </div>
       </IonContent>
     </IonPage>

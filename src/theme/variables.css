@@ -56,3 +56,19 @@ http://ionicframework.com/docs/theming/ */
 
 	--ion-font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
 }
+
+
+/* Hide scrollbar globally */
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+ion-content::part(scroll)::-webkit-scrollbar {
+  display: none;
+}
+
