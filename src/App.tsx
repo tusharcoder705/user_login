@@ -6,6 +6,7 @@ import PrivateRoute from './auth/PrivateRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import ForgotPassword from './pages/ForgotPassword';
 import EnergyDashboard from './pages/EnergyDashboard';
 import AppMenu from './components/AppMenu';
 import ComingSoon from './pages/ComingSoon';
@@ -53,6 +54,9 @@ const App: React.FC = () => (
           </Route>
           <Route exact path="/signup">
             <Signup />
+          </Route>
+          <Route exact path="/forgot-password">
+            <ForgotPassword />
           </Route>
 
           <PrivateRoute exact path="/home">

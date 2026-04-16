@@ -104,12 +104,21 @@ const TimeRangeModal: React.FC<TimeRangeModalProps> = ({ isOpen, onClose, onSele
         "--shadow": "0 4px 12px rgba(0,0,0,0.4)",
     };
 
-    if (showCustomModal) {
-        return (
-            <div className="modal-overlay" style={themeStyles} onClick={handleCustomCancel}>
-                <div className="modal-card time-range-modal" onClick={(e) => e.stopPropagation()}>
-                    <h2>Custom Date Range</h2>
-                    <div className="custom-range-form">
+    return (
+        <IonModal isOpen={isOpen} onDidDismiss={onClose} initialBreakpoint={0.6} breakpoints={[0, 0.6, 0.9]} className="time-range-modal" style={themeStyles}>
+            <IonHeader className="ion-no-border">
+                <IonToolbar>
+                    <IonTitle>{showCustomModal ? "Custom Date Range" : "Select Time Range"}</IonTitle>
+                    <IonButtons slot="end">
+                        <IonButton onClick={showCustomModal ? handleCustomCancel : onClose}>
+                            <IonIcon icon={closeOutline} />
+                        </IonButton>
+                    </IonButtons>
+                </IonToolbar>
+            </IonHeader>
+            <IonContent className="ion-padding">
+                {showCustomModal ? (
+                    <div className="custom-range-form" style={{ marginTop: '1rem' }}>
                         <div className="form-group">
                             <label>Start Date & Time</label>
                             <div className="datetime-inputs">
@@ -126,7 +135,7 @@ const TimeRangeModal: React.FC<TimeRangeModalProps> = ({ isOpen, onClose, onSele
                                 />
                             </div>
                         </div>
-                        <div className="form-group">
+                        <div className="form-group" style={{ marginTop: '1rem' }}>
                             <label>End Date & Time</label>
                             <div className="datetime-inputs">
                                 <input
@@ -143,48 +152,32 @@ const TimeRangeModal: React.FC<TimeRangeModalProps> = ({ isOpen, onClose, onSele
                                 />
                             </div>
                         </div>
-                    </div>
-                    <div className="modal-actions">
-                        <button className="btn cancel-btn" onClick={handleCustomCancel}>
-                            Cancel
-                        </button>
-                        <button
-                            className="btn apply-btn"
-                            onClick={handleCustomApply}
-                            disabled={!customStartDate || !customStartTime || !customEndDate || !customEndTime}
-                        >
-                            Apply
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <IonModal isOpen={isOpen} onDidDismiss={onClose} initialBreakpoint={0.6} breakpoints={[0, 0.6, 0.9]} className="time-range-modal">
-            <IonHeader className="ion-no-border">
-                <IonToolbar>
-                    <IonTitle>Select Time Range</IonTitle>
-                    <IonButtons slot="end">
-                        <IonButton onClick={onClose}>
-                            <IonIcon icon={closeOutline} />
-                        </IonButton>
-                    </IonButtons>
-                </IonToolbar>
-            </IonHeader>
-            <IonContent className="ion-padding">
-                <div className="time-range-options">
-                    {fixedOptions.map((option) => (
-                        <div
-                            key={option.value}
-                            className={`time-range-option ${selectedRange === option.value ? "selected" : ""}`}
-                            onClick={() => handleOptionClick(option)}
-                        >
-                            {option.label}
+                        <div className="modal-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '2rem' }}>
+                            <button className="btn cancel-btn" onClick={handleCustomCancel}>
+                                Cancel
+                            </button>
+                            <button
+                                className="btn apply-btn"
+                                onClick={handleCustomApply}
+                                disabled={!customStartDate || !customStartTime || !customEndDate || !customEndTime}
+                            >
+                                Apply
+                            </button>
                         </div>
-                    ))}
-                </div>
+                    </div>
+                ) : (
+                    <div className="time-range-options">
+                        {fixedOptions.map((option) => (
+                            <div
+                                key={option.value}
+                                className={`time-range-option ${selectedRange === option.value ? "selected" : ""}`}
+                                onClick={() => handleOptionClick(option)}
+                            >
+                                {option.label}
+                            </div>
+                        ))}
+                    </div>
+                )}
             </IonContent>
         </IonModal>
     );

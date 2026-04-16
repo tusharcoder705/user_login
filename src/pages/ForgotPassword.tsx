@@ -6,17 +6,15 @@ import {
   IonLabel,
   IonNote,
   IonPage,
-  IonRouterLink,
   IonText,
 } from '@ionic/react';
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useMemo, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
-  LoginFormData,
-  getActiveUser,
+  ForgotPasswordFormData,
   initializeUsers,
-  loginUser,
-  validateLogin,
+  resetPassword,
+  validateForgotPassword,
 } from '../auth/auth';
 import './Auth.css';
 
@@ -27,27 +25,24 @@ interface StatusMessage {
   text: string;
 }
 
-const Login: React.FC = () => {
+const ForgotPassword: React.FC = () => {
   const history = useHistory();
 
   const [status, setStatus] = useState<StatusMessage | null>(null);
-  const [loginData, setLoginData] = useState<LoginFormData>({
+  const [users] = useState(() => initializeUsers());
+  const [formData, setFormData] = useState<ForgotPasswordFormData>({
     email: '',
     password: '',
+    confirmPassword: '',
   });
   const [touched, setTouched] = useState<
-    Partial<Record<keyof LoginFormData, boolean>>
+    Partial<Record<keyof ForgotPasswordFormData, boolean>>
   >({});
 
-  useEffect(() => {
-    initializeUsers();
-
-    if (getActiveUser()) {
-      history.replace('/dashboard');
-    }
-  }, [history]);
-
-  const errors = useMemo(() => validateLogin(loginData), [loginData]);
+  const errors = useMemo(
+    () => validateForgotPassword(formData, users),
+    [formData, users],
+  );
   const hasErrors = Object.keys(errors).length > 0;
 
   const statusColor =
@@ -57,25 +52,25 @@ const Login: React.FC = () => {
         ? 'success'
         : 'medium';
 
-  const setField = (field: keyof LoginFormData, value: string): void => {
-    setLoginData((prev) => ({ ...prev, [field]: value }));
+  const setField = (field: keyof ForgotPasswordFormData, value: string): void => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
     setStatus(null);
   };
 
-  const markTouched = (field: keyof LoginFormData): void => {
+  const markTouched = (field: keyof ForgotPasswordFormData): void => {
     setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    setTouched({ email: true, password: true });
+    setTouched({ email: true, password: true, confirmPassword: true });
 
     if (hasErrors) {
       setStatus({ tone: 'error', text: 'Please fix the highlighted fields.' });
       return;
     }
 
-    const result = loginUser(loginData);
+    const result = resetPassword(formData);
     if (!result.ok) {
       setStatus({ tone: 'error', text: result.message });
       return;
@@ -83,9 +78,12 @@ const Login: React.FC = () => {
 
     setStatus({
       tone: 'success',
-      text: `Welcome, ${result.user.name}!`,
+      text: 'Password updated successfully. Please login with your new password.',
     });
-    history.push('/dashboard');
+
+    setTimeout(() => {
+      history.replace('/login');
+    }, 2000);
   };
 
   return (
@@ -98,10 +96,10 @@ const Login: React.FC = () => {
                 <span className="logo-text">OEE</span>
               </div>
             </div>
-            
+
             <div className="auth-heading">
-              <h1>Welcome Back!</h1>
-              <p>Sign in to your account to continue</p>
+              <h1>Reset Password</h1>
+              <p>Enter your email and a new password</p>
             </div>
 
             <form onSubmit={handleSubmit} noValidate className="auth-form">
@@ -111,8 +109,8 @@ const Login: React.FC = () => {
                   type="email"
                   inputmode="email"
                   autocomplete="email"
-                  placeholder="demo@gmail.com"
-                  value={loginData.email}
+                  placeholder="name@example.com"
+                  value={formData.email}
                   onIonInput={(event) =>
                     setField('email', event.detail.value ?? '')
                   }
@@ -127,13 +125,13 @@ const Login: React.FC = () => {
               ) : null}
 
               <IonItem className="input-item" lines="none">
-                <IonLabel position="stacked" className="input-label">Password</IonLabel>
+                <IonLabel position="stacked" className="input-label">New Password</IonLabel>
                 <IonInput
                   type="password"
                   clearOnEdit={false}
-                  autocomplete="current-password"
-                  placeholder="Enter password"
-                  value={loginData.password}
+                  autocomplete="new-password"
+                  placeholder="Strong password"
+                  value={formData.password}
                   onIonInput={(event) =>
                     setField('password', event.detail.value ?? '')
                   }
@@ -146,34 +144,45 @@ const Login: React.FC = () => {
                 </IonNote>
               ) : null}
 
-              <div className="forgot-password-link">
-                <IonRouterLink routerLink="/forgot-password">Forgot Password?</IonRouterLink>
-              </div>
+              <IonItem className="input-item" lines="none">
+                <IonLabel position="stacked" className="input-label">Confirm Password</IonLabel>
+                <IonInput
+                  type="password"
+                  clearOnEdit={false}
+                  autocomplete="new-password"
+                  placeholder="Repeat new password"
+                  value={formData.confirmPassword}
+                  onIonInput={(event) =>
+                    setField('confirmPassword', event.detail.value ?? '')
+                  }
+                  onIonBlur={() => markTouched('confirmPassword')}
+                />
+              </IonItem>
+              {touched.confirmPassword && errors.confirmPassword ? (
+                <IonNote color="danger" className="inline-error">
+                  {errors.confirmPassword}
+                </IonNote>
+              ) : null}
 
               <div className="actions">
                 <IonButton expand="block" type="submit" className="login-button">
-                  Sign In
+                  Reset Password
                 </IonButton>
               </div>
             </form>
 
             {status ? (
-              <IonText color={statusColor} className="status-text text-center">
+              <IonText color={statusColor} className="status-text text-center" style={{ display: 'block', marginTop: '15px' }}>
                 {status.text}
               </IonText>
             ) : null}
 
-            {/* <div className="link-row">
-              <span className="no-account-text">Don't have an account? </span>
-              <IonButton
-                routerLink="/signup"
-                fill="clear"
-                size="small"
-                className="signup-button"
-              >
-                Sign Up
+            <div className="link-row">
+              <span className="no-account-text">Remembered your password? </span>
+              <IonButton routerLink="/login" fill="clear" size="small" className="signup-button">
+                Sign In
               </IonButton>
-            </div> */}
+            </div>
           </div>
         </div>
       </IonContent>
@@ -181,5 +190,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
-
+export default ForgotPassword;

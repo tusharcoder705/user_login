@@ -12,6 +12,12 @@ export interface SignupFormData {
   confirmPassword: string;
 }
 
+export interface ForgotPasswordFormData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 export interface StoredUser {
   name: string;
   email: string;
@@ -147,6 +153,38 @@ export const validateSignup = (
   return errors;
 };
 
+export const validateForgotPassword = (
+  data: ForgotPasswordFormData,
+  users: StoredUser[],
+): FieldErrors<keyof ForgotPasswordFormData> => {
+  const errors: FieldErrors<keyof ForgotPasswordFormData> = {};
+
+  if (!data.email.trim()) {
+    errors.email = 'Email is required.';
+  } else if (!EMAIL_PATTERN.test(data.email.trim())) {
+    errors.email = 'Please enter a valid email address.';
+  } else if (
+    !users.some((user) => normalizeEmail(user.email) === normalizeEmail(data.email))
+  ) {
+    errors.email = 'No account found with this email.';
+  }
+
+  if (!data.password) {
+    errors.password = 'New password is required.';
+  } else if (!PASSWORD_PATTERN.test(data.password)) {
+    errors.password =
+      'Use 8+ chars with letter, number, and one special character.';
+  }
+
+  if (!data.confirmPassword) {
+    errors.confirmPassword = 'Please confirm your new password.';
+  } else if (data.confirmPassword !== data.password) {
+    errors.confirmPassword = 'Passwords do not match.';
+  }
+
+  return errors;
+};
+
 export const setSessionEmail = (email: string): void => {
   localStorage.setItem(SESSION_STORAGE_KEY, normalizeEmail(email));
 };
@@ -215,4 +253,29 @@ export const signupUser = (data: SignupFormData): SignupResult => {
   writeUsers([...users, newUser]);
 
   return { ok: true, user: newUser };
+};
+
+export type ForgotPasswordResult =
+  | { ok: true }
+  | { ok: false; message: string };
+
+export const resetPassword = (data: ForgotPasswordFormData): ForgotPasswordResult => {
+  let users = initializeUsers();
+  const errors = validateForgotPassword(data, users);
+
+  if (Object.keys(errors).length > 0) {
+    return { ok: false, message: 'Please fix the highlighted fields.' };
+  }
+
+  const normalizedEmail = normalizeEmail(data.email);
+  const userIndex = users.findIndex((user) => user.email === normalizedEmail);
+
+  if (userIndex === -1) {
+    return { ok: false, message: 'Account not found. Please check your email.' };
+  }
+
+  users[userIndex].password = data.password;
+  writeUsers(users);
+
+  return { ok: true };
 };
