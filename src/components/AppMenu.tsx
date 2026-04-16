@@ -5,13 +5,8 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonListHeader,
   IonMenu,
   IonMenuToggle,
-  IonNote,
-  IonAccordionGroup,
-  IonAccordion,
-  IonButton,
   IonFooter,
   useIonAlert
 } from '@ionic/react';
@@ -20,10 +15,13 @@ import { useLocation, useHistory } from 'react-router-dom';
 import {
   hardwareChipOutline,
   pulseOutline,
-  settingsOutline,
-  speedometerOutline,
+  warningOutline,
+  barChartOutline,
   logOutOutline,
-  homeOutline
+  homeOutline,
+  analyticsOutline,
+  timerOutline,
+  constructOutline
 } from 'ionicons/icons';
 import './AppMenu.css';
 import { clearSession } from '../auth/auth';
@@ -49,16 +47,34 @@ const appPages: AppPage[] = [
     mdIcon: pulseOutline
   },
   {
-    title: 'Feature 3',
-    url: '/feature3',
-    iosIcon: speedometerOutline,
-    mdIcon: speedometerOutline
+    title: 'Machine Comparison',
+    url: '/compare',
+    iosIcon: barChartOutline,
+    mdIcon: barChartOutline
   },
   {
-    title: 'Feature 4',
-    url: '/feature4',
-    iosIcon: settingsOutline,
-    mdIcon: settingsOutline
+    title: 'Efficiency Analytics',
+    url: '/oee',
+    iosIcon: analyticsOutline,
+    mdIcon: analyticsOutline
+  },
+  {
+    title: 'Shift Summary',
+    url: '/shift',
+    iosIcon: timerOutline,
+    mdIcon: timerOutline
+  },
+  {
+    title: 'Maintenance Log',
+    url: '/maintenance',
+    iosIcon: constructOutline,
+    mdIcon: constructOutline
+  },
+  {
+    title: 'System Alerts',
+    url: '/alerts',
+    iosIcon: warningOutline,
+    mdIcon: warningOutline
   }
 ];
 

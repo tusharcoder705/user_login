@@ -3,13 +3,18 @@ import { IonApp, IonRouterOutlet, setupIonicReact, IonSplitPane } from '@ionic/r
 import { IonReactRouter } from '@ionic/react-router';
 import { getActiveUser } from './auth/auth';
 import PrivateRoute from './auth/PrivateRoute';
-import Home from './pages/Home';
+
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgotPassword';
 import EnergyDashboard from './pages/EnergyDashboard';
+import PowerMonitoring from './pages/PowerMonitoring';
+import MachineComparison from './pages/MachineComparison';
+import SystemAlerts from './pages/SystemAlerts';
+import OEEDashboard from './pages/OEEDashboard';
+import MaintenanceLog from './pages/MaintenanceLog';
+import ShiftProduction from './pages/ShiftProduction';
 import AppMenu from './components/AppMenu';
-import ComingSoon from './pages/ComingSoon';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -59,24 +64,34 @@ const App: React.FC = () => (
             <ForgotPassword />
           </Route>
 
-          <PrivateRoute exact path="/home">
-            <Home />
-          </PrivateRoute>
+
 
           <PrivateRoute exact path="/dashboard">
             <EnergyDashboard />
           </PrivateRoute>
 
           <PrivateRoute exact path="/power">
-            <ComingSoon />
+            <PowerMonitoring />
           </PrivateRoute>
 
-          <PrivateRoute exact path="/feature3">
-            <ComingSoon />
+          <PrivateRoute exact path="/compare">
+            <MachineComparison />
           </PrivateRoute>
 
-          <PrivateRoute exact path="/feature4">
-            <ComingSoon />
+          <PrivateRoute exact path="/oee">
+            <OEEDashboard />
+          </PrivateRoute>
+
+          <PrivateRoute exact path="/shift">
+            <ShiftProduction />
+          </PrivateRoute>
+
+          <PrivateRoute exact path="/maintenance">
+            <MaintenanceLog />
+          </PrivateRoute>
+
+          <PrivateRoute exact path="/alerts">
+            <SystemAlerts />
           </PrivateRoute>
 
           <Route exact path="/">
