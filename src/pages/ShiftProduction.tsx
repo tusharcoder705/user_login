@@ -19,6 +19,7 @@ import {
 import { flashOutline, speedometerOutline, pulseOutline } from 'ionicons/icons';
 import '../components/EnergyConsumption.css';
 import PdfDownloadControl from '../components/PdfDownloadControl';
+import NotificationBell from '../components/NotificationBell';
 import { getTimeRangeTotalMinutes, makeSeededRandom, type CustomRange } from '../utils/timeRange';
 
 const ShiftProduction: React.FC = () => {
@@ -75,6 +76,7 @@ const ShiftProduction: React.FC = () => {
             contentRef={contentRef}
             fileName={(rangeLabel) => `Shift Summary - ${rangeLabel}.pdf`}
           />
+          <NotificationBell />
         </IonToolbar>
       </IonHeader>
       

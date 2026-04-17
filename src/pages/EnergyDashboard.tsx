@@ -13,6 +13,7 @@ import EnergyConsumption, {
   type RangeKey,
 } from '../components/EnergyConsumption';
 import PdfDownloadControl from '../components/PdfDownloadControl';
+import NotificationBell from '../components/NotificationBell';
 
 
 const EnergyDashboard: React.FC = () => {
@@ -46,6 +47,7 @@ const EnergyDashboard: React.FC = () => {
             onSelectRange={handleSelectRange}
             contentRef={contentRef}
           />
+          <NotificationBell />
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>

@@ -17,6 +17,7 @@ import {
 import { documentTextOutline, constructOutline } from 'ionicons/icons';
 import '../components/EnergyConsumption.css';
 import PdfDownloadControl from '../components/PdfDownloadControl';
+import NotificationBell from '../components/NotificationBell';
 import { getTimeRangeTotalMinutes, makeSeededRandom, type CustomRange } from '../utils/timeRange';
 
 const MaintenanceLog: React.FC = () => {
@@ -58,6 +59,7 @@ const MaintenanceLog: React.FC = () => {
             contentRef={contentRef}
             fileName={(rangeLabel) => `Maintenance Log - ${rangeLabel}.pdf`}
           />
+          <NotificationBell />
         </IonToolbar>
       </IonHeader>
       

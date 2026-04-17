@@ -14,6 +14,7 @@ import { barChartOutline, speedometerOutline } from 'ionicons/icons';
 import ApexCharts from 'apexcharts';
 import '../components/EnergyConsumption.css';
 import PdfDownloadControl from '../components/PdfDownloadControl';
+import NotificationBell from '../components/NotificationBell';
 
 const MachineComparison: React.FC = () => {
   const barChartRef = useRef<HTMLDivElement | null>(null);
@@ -151,6 +152,7 @@ const MachineComparison: React.FC = () => {
             onSelectRange={handleSelectRange}
             contentRef={contentRef}
           />
+          <NotificationBell />
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen className="ion-padding" style={{ '--background': '#f8fafc' }}>

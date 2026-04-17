@@ -13,6 +13,7 @@ import {
 import { warningOutline, flashOutline, alertCircleOutline, checkmarkCircleOutline } from 'ionicons/icons';
 import '../components/EnergyConsumption.css';
 import PdfDownloadControl from '../components/PdfDownloadControl';
+import NotificationBell from '../components/NotificationBell';
 import { getTimeRangeTotalMinutes, makeSeededRandom, type CustomRange } from '../utils/timeRange';
 
 const SystemAlerts: React.FC = () => {
@@ -87,6 +88,7 @@ const SystemAlerts: React.FC = () => {
             contentRef={contentRef}
             fileName={(rangeLabel) => `System Alerts - ${rangeLabel}.pdf`}
           />
+          <NotificationBell />
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen className="ion-padding" style={{ '--background': '#f8fafc' }}>

@@ -14,6 +14,7 @@ import { timerOutline, checkmarkCircleOutline, hardwareChipOutline } from 'ionic
 import ApexCharts from 'apexcharts';
 import '../components/EnergyConsumption.css';
 import PdfDownloadControl from '../components/PdfDownloadControl';
+import NotificationBell from '../components/NotificationBell';
 import { getTimeRangeTotalMinutes, makeSeededRandom, type CustomRange } from '../utils/timeRange';
 
 const OEEDashboard: React.FC = () => {
@@ -118,6 +119,7 @@ const OEEDashboard: React.FC = () => {
             contentRef={contentRef}
             fileName={(rangeLabel) => `Efficiency Analytics - ${rangeLabel}.pdf`}
           />
+          <NotificationBell />
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen className="ion-padding" style={{ '--background': '#f8fafc' }}>
