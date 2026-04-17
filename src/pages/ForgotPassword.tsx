@@ -92,9 +92,7 @@ const ForgotPassword: React.FC = () => {
         <div className="auth-shell">
           <div className="auth-form-container">
             <div className="app-logo-placeholder">
-              <div className="logo-circle">
-                <span className="logo-text">OEE</span>
-              </div>
+              <img src="/OEE.png" alt="OEE logo" className="app-logo-image" />
             </div>
 
             <div className="auth-heading">

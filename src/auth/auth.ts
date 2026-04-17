@@ -260,7 +260,7 @@ export type ForgotPasswordResult =
   | { ok: false; message: string };
 
 export const resetPassword = (data: ForgotPasswordFormData): ForgotPasswordResult => {
-  let users = initializeUsers();
+  const users = initializeUsers();
   const errors = validateForgotPassword(data, users);
 
   if (Object.keys(errors).length > 0) {

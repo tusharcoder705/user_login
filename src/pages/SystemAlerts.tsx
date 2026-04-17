@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   IonButtons,
   IonContent,
@@ -12,15 +12,65 @@ import {
 } from '@ionic/react';
 import { warningOutline, flashOutline, alertCircleOutline, checkmarkCircleOutline } from 'ionicons/icons';
 import '../components/EnergyConsumption.css';
-
-const INITIAL_ALERTS = [
-  { id: 1, type: 'critical', machine: 'Machine 2', message: 'Voltage spiked to 255V', time: '10 mins ago', icon: flashOutline },
-  { id: 2, type: 'warning', machine: 'Machine 1', message: 'Power Factor dropping below 0.85', time: '1 hr ago', icon: warningOutline },
-  { id: 3, type: 'info', machine: 'Machine 3', message: 'Offline for scheduled maintenance', time: '2 hrs ago', icon: alertCircleOutline }
-];
+import PdfDownloadControl from '../components/PdfDownloadControl';
+import { getTimeRangeTotalMinutes, makeSeededRandom, type CustomRange } from '../utils/timeRange';
 
 const SystemAlerts: React.FC = () => {
-  const [alerts] = useState(INITIAL_ALERTS);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+
+  const [selectedRange, setSelectedRange] = useState('5m');
+  const [customRange, setCustomRange] = useState<CustomRange | null>(null);
+
+  const handleSelectRange = (
+    range: string,
+    _label: string,
+    selectedCustomRange?: CustomRange,
+  ) => {
+    setSelectedRange(range);
+    setCustomRange(range === 'custom' && selectedCustomRange ? selectedCustomRange : null);
+  };
+
+  const alerts = useMemo(() => {
+    const totalMinutes = getTimeRangeTotalMinutes(selectedRange, customRange);
+    const rng = makeSeededRandom(`${selectedRange}|${customRange?.start ?? ''}|${customRange?.end ?? ''}`);
+
+    const count = totalMinutes <= 30 ? 3 : totalMinutes <= 24 * 60 ? 5 : 7;
+    const types: Array<'critical' | 'warning' | 'info'> = ['critical', 'warning', 'info'];
+    const icons = {
+      critical: flashOutline,
+      warning: warningOutline,
+      info: alertCircleOutline,
+    };
+
+    const messages = {
+      critical: ['Voltage spike detected', 'Breaker trip risk', 'Overcurrent event'],
+      warning: ['Power factor trending down', 'Harmonics rising', 'Temperature threshold nearing'],
+      info: ['Scheduled maintenance window', 'Auto-calibration completed', 'Sensor heartbeat OK'],
+    };
+
+    const timeLabels = ['just now', '5 mins ago', '15 mins ago', '1 hr ago', '2 hrs ago', 'yesterday'];
+
+    return Array.from({ length: count }).map((_, idx) => {
+      const t = types[Math.floor(rng() * types.length)] ?? 'info';
+      const machineNo = 1 + Math.floor(rng() * 3);
+      const msgList = messages[t];
+      const msg = msgList[Math.floor(rng() * msgList.length)] ?? msgList[0];
+      const time = timeLabels[Math.min(timeLabels.length - 1, Math.floor(rng() * timeLabels.length))];
+
+      return {
+        id: idx + 1,
+        type: t,
+        machine: `Machine ${machineNo}`,
+        message: msg,
+        time,
+        icon: icons[t],
+      };
+    });
+  }, [selectedRange, customRange]);
+
+  const criticalCount = alerts.filter((a) => a.type === 'critical').length;
+  const warningCount = alerts.filter((a) => a.type === 'warning').length;
+  const statusPct = Math.max(50, Math.min(100, 100 - criticalCount * 15 - warningCount * 7));
 
   return (
     <IonPage>
@@ -30,10 +80,17 @@ const SystemAlerts: React.FC = () => {
             <IonMenuButton color="primary" />
           </IonButtons>
           <IonTitle>System Alerts</IonTitle>
+          <PdfDownloadControl
+            pageTitle="System Alerts"
+            selectedRange={selectedRange}
+            onSelectRange={handleSelectRange}
+            contentRef={contentRef}
+            fileName={(rangeLabel) => `System Alerts - ${rangeLabel}.pdf`}
+          />
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen className="ion-padding" style={{ '--background': '#f8fafc' }}>
-        <div className="energy-inner" style={{ paddingTop: '1rem' }}>
+        <div ref={contentRef} className="energy-inner" style={{ paddingTop: '1rem' }}>
           
           <div className="energy-title-row">
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1e293b', margin: 0 }}>Anomaly Detection</h2>
@@ -42,17 +99,17 @@ const SystemAlerts: React.FC = () => {
           <div className="energy-widgets">
             <IonCard className="widget-card" style={{ borderColor: '#ef4444' }}>
               <div className="widget-title"><IonIcon icon={warningOutline} style={{ color: '#ef4444' }} /> Critical Needs</div>
-              <div className="widget-value" style={{ color: '#ef4444' }}>1</div>
+              <div className="widget-value" style={{ color: '#ef4444' }}>{criticalCount}</div>
               <div className="widget-sub">Action required immediately</div>
             </IonCard>
             <IonCard className="widget-card">
               <div className="widget-title"><IonIcon icon={alertCircleOutline} /> Warnings</div>
-              <div className="widget-value">1</div>
+              <div className="widget-value">{warningCount}</div>
               <div className="widget-sub">Monitor closely</div>
             </IonCard>
             <IonCard className="widget-card" style={{ borderColor: '#10b981' }}>
               <div className="widget-title"><IonIcon icon={checkmarkCircleOutline} style={{ color: '#10b981' }} /> System Status</div>
-              <div className="widget-value" style={{ color: '#10b981' }}>75%</div>
+              <div className="widget-value" style={{ color: '#10b981' }}>{statusPct}%</div>
               <div className="widget-sub">Network health nominal</div>
             </IonCard>
           </div>

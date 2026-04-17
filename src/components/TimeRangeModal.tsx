@@ -9,6 +9,8 @@ interface TimeRangeModalProps {
     onSelect: (value: string, label: string, customRange?: { start: string; end: string }) => void;
     selectedRange: string;
     theme: "dark" | "light";
+    title?: string;
+    customTitle?: string;
 }
 
 type ThemeVars = React.CSSProperties & {
@@ -20,7 +22,15 @@ type ThemeVars = React.CSSProperties & {
     "--shadow": string;
 };
 
-const TimeRangeModal: React.FC<TimeRangeModalProps> = ({ isOpen, onClose, onSelect, selectedRange, theme }) => {
+const TimeRangeModal: React.FC<TimeRangeModalProps> = ({
+    isOpen,
+    onClose,
+    onSelect,
+    selectedRange,
+    theme,
+    title,
+    customTitle,
+}) => {
     const [showCustomModal, setShowCustomModal] = useState(false);
     const [customStartDate, setCustomStartDate] = useState("");
     const [customStartTime, setCustomStartTime] = useState("");
@@ -104,11 +114,27 @@ const TimeRangeModal: React.FC<TimeRangeModalProps> = ({ isOpen, onClose, onSele
         "--shadow": "0 4px 12px rgba(0,0,0,0.4)",
     };
 
+    // Smaller breakpoint for the simple grid view (avoids extra empty space).
+    // Larger breakpoint for the custom form (needs more room).
+    const initialBreakpoint = showCustomModal ? 0.85 : 0.55;
+    const breakpoints = showCustomModal ? [0, 0.85, 0.95] : [0, 0.55, 0.85];
+
     return (
-        <IonModal isOpen={isOpen} onDidDismiss={onClose} initialBreakpoint={0.6} breakpoints={[0, 0.6, 0.9]} className="time-range-modal" style={themeStyles}>
+        <IonModal
+            isOpen={isOpen}
+            onDidDismiss={onClose}
+            initialBreakpoint={initialBreakpoint}
+            breakpoints={breakpoints}
+            className="time-range-modal"
+            style={themeStyles}
+        >
             <IonHeader className="ion-no-border">
                 <IonToolbar>
-                    <IonTitle>{showCustomModal ? "Custom Date Range" : "Select Time Range"}</IonTitle>
+                    <IonTitle>
+                        {showCustomModal
+                            ? (customTitle ?? "Custom Date Range")
+                            : (title ?? "Select Time Range")}
+                    </IonTitle>
                     <IonButtons slot="end">
                         <IonButton onClick={showCustomModal ? handleCustomCancel : onClose}>
                             <IonIcon icon={closeOutline} />

@@ -8,7 +8,7 @@ import { calendarOutline } from "ionicons/icons";
 
 const CHART_COUNT = 3;
 
-type RangeKey =
+export type RangeKey =
   | "5m"
   | "30m"
   | "6h"
@@ -25,7 +25,7 @@ interface RangeSpec {
   stepMinutes: number;
 }
 
-interface CustomRange {
+export interface CustomRange {
   start: string;
   end: string;
 }
@@ -153,7 +153,27 @@ const buildDataset = (
   return { labels, timestamps, dataA, dataB, stepMinutes: spec.stepMinutes };
 };
 
-export default function EnergyConsumption() {
+type EnergyConsumptionProps = {
+  selectedRange?: RangeKey;
+  selectedRangeLabel?: string;
+  customRange?: CustomRange | null;
+  onSelectRange?: (
+    range: string,
+    label: string,
+    selectedCustomRange?: CustomRange
+  ) => void;
+  showRangeButton?: boolean;
+  showRangeModal?: boolean;
+};
+
+export default function EnergyConsumption({
+  selectedRange: controlledRange,
+  selectedRangeLabel: controlledRangeLabel,
+  customRange: controlledCustomRange,
+  onSelectRange,
+  showRangeButton = true,
+  showRangeModal = true,
+}: EnergyConsumptionProps) {
   const nodes = useRef<(HTMLDivElement | null)[]>([]);
   const instances = useRef<ChartInstance[]>([]);
 
@@ -162,18 +182,24 @@ export default function EnergyConsumption() {
   const [selectedRangeLabel, setSelectedRangeLabel] = useState("5 min");
   const [customRange, setCustomRange] = useState<CustomRange | null>(null);
 
+  const effectiveRange = controlledRange ?? selectedRange;
+  const effectiveRangeLabel = controlledRangeLabel ?? selectedRangeLabel;
+  const effectiveCustomRange = controlledCustomRange ?? customRange;
+
   useEffect(() => {
     for (let i = 0; i < CHART_COUNT; i++) {
       const el = nodes.current[i];
       if (!el) continue;
 
-      const initialData = buildDataset(selectedRange, i, customRange);
+      const initialData = buildDataset(effectiveRange, i, effectiveCustomRange);
 
       let xAxisFormat = "HH:mm";
-      if (["thisWeek", "lastWeek", "thisMonth", "lastMonth"].includes(selectedRange)) {
+      if (["thisWeek", "lastWeek", "thisMonth", "lastMonth"].includes(effectiveRange)) {
         xAxisFormat = "dd MMM";
-      } else if (selectedRange === "custom" && customRange) {
-        const diffMs = new Date(customRange.end).getTime() - new Date(customRange.start).getTime();
+      } else if (effectiveRange === "custom" && effectiveCustomRange) {
+        const diffMs =
+          new Date(effectiveCustomRange.end).getTime() -
+          new Date(effectiveCustomRange.start).getTime();
         if (diffMs > 24 * 60 * 60 * 1000) xAxisFormat = "dd MMM";
       }
 
@@ -291,13 +317,18 @@ export default function EnergyConsumption() {
       });
       instances.current = [];
     };
-  }, [selectedRange, customRange]);
+  }, [effectiveRange, effectiveCustomRange]);
 
   const handleSelectRange = (
     range: string,
     label: string,
     selectedCustomRange?: CustomRange
   ) => {
+    if (onSelectRange) {
+      onSelectRange(range, label, selectedCustomRange);
+      return;
+    }
+
     setSelectedRange(range as RangeKey);
     setSelectedRangeLabel(label);
     setCustomRange(range === "custom" && selectedCustomRange ? selectedCustomRange : null);
@@ -307,11 +338,15 @@ export default function EnergyConsumption() {
     <section className="energy-page-wrapper" aria-label="Energy Consumption">
       <div className="energy-inner">
         <div className="energy-title-row">
-          
-          <button className="time-range-button" onClick={() => setModalOpen(true)}>
-            <IonIcon icon={calendarOutline} />
-            <span>{selectedRangeLabel}</span>
-          </button>
+          {showRangeButton ? (
+            <button
+              className="time-range-button"
+              onClick={() => (showRangeModal ? setModalOpen(true) : undefined)}
+            >
+              <IonIcon icon={calendarOutline} />
+              <span>{effectiveRangeLabel}</span>
+            </button>
+          ) : null}
         </div>
 
         <div className="energy-widgets">
@@ -356,13 +391,15 @@ export default function EnergyConsumption() {
           ))}
         </div>
       </div>
-      <TimeRangeModal
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
-        onSelect={handleSelectRange}
-        selectedRange={selectedRange}
-        theme="light"
-      />
+      {showRangeModal ? (
+        <TimeRangeModal
+          isOpen={isModalOpen}
+          onClose={() => setModalOpen(false)}
+          onSelect={handleSelectRange}
+          selectedRange={effectiveRange}
+          theme="light"
+        />
+      ) : null}
     </section>
   );
 }

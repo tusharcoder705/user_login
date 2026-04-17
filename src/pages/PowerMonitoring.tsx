@@ -13,22 +13,39 @@ import {
 import { flashOutline, speedometerOutline, pulseOutline } from 'ionicons/icons';
 import ApexCharts from 'apexcharts';
 import '../components/EnergyConsumption.css';
+import PdfDownloadControl from '../components/PdfDownloadControl';
+import { getTimeRangeTotalMinutes, type CustomRange } from '../utils/timeRange';
 
 const PowerMonitoring: React.FC = () => {
   const chartRef1 = useRef<HTMLDivElement | null>(null);
   const chartRef2 = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
+
+  const [selectedRange, setSelectedRange] = useState('5m');
+  const [customRange, setCustomRange] = useState<CustomRange | null>(null);
 
   const [m1Voltage, setM1Voltage] = useState(229.4);
   const [m2Current, setM2Current] = useState(46.2);
   const [m3Freq, setM3Freq] = useState(50.02);
   const pfRef = useRef<[number, number, number]>([0.92, 0.88, 0.95]);
 
+  const handleSelectRange = (
+    range: string,
+    _label: string,
+    selectedCustomRange?: CustomRange,
+  ) => {
+    setSelectedRange(range);
+    setCustomRange(range === 'custom' && selectedCustomRange ? selectedCustomRange : null);
+  };
+
   useEffect(() => {
     let pfChart: ApexCharts | null = null;
     let voltageChart: ApexCharts | null = null;
 
-    const points = 12;
-    const tickMs = 3000;
+    const totalMinutes = getTimeRangeTotalMinutes(selectedRange, customRange);
+    const points = ['thisWeek', 'lastWeek', 'thisMonth', 'lastMonth'].includes(selectedRange) ? 7 : 12;
+    const stepMs = Math.max(3000, Math.round((totalMinutes * 60000) / Math.max(1, points - 1)));
+    const tickMs = stepMs;
 
     const categories: number[] = [];
     const vM1: number[] = [];
@@ -157,7 +174,7 @@ const PowerMonitoring: React.FC = () => {
       pfChart?.destroy();
       voltageChart?.destroy();
     };
-  }, []);
+  }, [selectedRange, customRange]);
 
   return (
     <IonPage>
@@ -167,10 +184,17 @@ const PowerMonitoring: React.FC = () => {
             <IonMenuButton color="primary" />
           </IonButtons>
           <IonTitle>Power Monitoring</IonTitle>
+          <PdfDownloadControl
+            pageTitle="Power Monitoring"
+            selectedRange={selectedRange}
+            onSelectRange={handleSelectRange}
+            contentRef={contentRef}
+            fileName={(rangeLabel) => `Power Monitoring - ${rangeLabel}.pdf`}
+          />
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen className="ion-padding" style={{ '--background': '#f8fafc' }}>
-        <div className="energy-inner" style={{ paddingTop: '1rem' }}>
+        <div ref={contentRef} className="energy-inner" style={{ paddingTop: '1rem' }}>
           <div className="energy-title-row">
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1e293b', margin: 0 }}>Realtime Electrical Parameters</h2>
           </div>

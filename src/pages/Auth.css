@@ -22,6 +22,15 @@
   margin-bottom: 32px;
 }
 
+.app-logo-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 10px;
+  box-shadow: 0 8px 16px rgba(2, 132, 199, 0.18);
+}
+
 .logo-circle {
   width: 80px;
   height: 80px;

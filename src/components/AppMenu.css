@@ -9,6 +9,15 @@
   margin-bottom: 0.5rem;
 }
 
+.menu-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 6px;
+  margin-right: 0.75rem;
+}
+
 .menu-home-icon {
   margin-right: 0.75rem;
   font-size: 1.75rem;

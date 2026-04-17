@@ -10,26 +10,24 @@ import {
   IonCard,
   IonIcon
 } from '@ionic/react';
-import { barChartOutline, calendarOutline, speedometerOutline } from 'ionicons/icons';
+import { barChartOutline, speedometerOutline } from 'ionicons/icons';
 import ApexCharts from 'apexcharts';
 import '../components/EnergyConsumption.css';
-import TimeRangeModal from '../components/TimeRangeModal';
+import PdfDownloadControl from '../components/PdfDownloadControl';
 
 const MachineComparison: React.FC = () => {
   const barChartRef = useRef<HTMLDivElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
 
-  const [isModalOpen, setModalOpen] = useState(false);
   const [selectedRange, setSelectedRange] = useState("5m");
-  const [selectedRangeLabel, setSelectedRangeLabel] = useState("5 min");
   const [customRange, setCustomRange] = useState<{start: string, end: string} | null>(null);
 
   const handleSelectRange = (
     range: string,
-    label: string,
+    _label: string,
     selectedCustomRange?: {start: string, end: string}
   ) => {
     setSelectedRange(range);
-    setSelectedRangeLabel(label);
     setCustomRange(range === "custom" && selectedCustomRange ? selectedCustomRange : null);
   };
 
@@ -131,7 +129,7 @@ const MachineComparison: React.FC = () => {
           { name: 'Machine 3 (kW)', data: [...dataM3] }
         ], true);
       }
-    }, 60000);
+    }, Math.max(60000, stepMs));
 
     return () => {
       clearInterval(interval);
@@ -147,10 +145,16 @@ const MachineComparison: React.FC = () => {
             <IonMenuButton color="primary" />
           </IonButtons>
           <IonTitle>Machine Comparison</IonTitle>
+          <PdfDownloadControl
+            pageTitle="Machine Comparison"
+            selectedRange={selectedRange}
+            onSelectRange={handleSelectRange}
+            contentRef={contentRef}
+          />
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen className="ion-padding" style={{ '--background': '#f8fafc' }}>
-        <div className="energy-inner" style={{ paddingTop: '1rem' }}>
+        <div ref={contentRef} className="energy-inner" style={{ paddingTop: '1rem' }}>
           
           <div className="energy-title-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1e293b', margin: 0 }}>System Analytics</h2>
@@ -190,14 +194,6 @@ const MachineComparison: React.FC = () => {
 
         </div>
       </IonContent>
-
-      <TimeRangeModal
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
-        onSelect={handleSelectRange}
-        selectedRange={selectedRange}
-        theme="light"
-      />
     </IonPage>
   );
 };

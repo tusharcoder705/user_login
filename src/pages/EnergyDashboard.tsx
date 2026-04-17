@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import {
   IonButtons,
   IonContent,
@@ -8,10 +8,30 @@ import {
   IonTitle,
   IonToolbar
 } from '@ionic/react';
-import EnergyConsumption from '../components/EnergyConsumption';
-import './EnergyDashboard.css';
+import EnergyConsumption, {
+  type CustomRange,
+  type RangeKey,
+} from '../components/EnergyConsumption';
+import PdfDownloadControl from '../components/PdfDownloadControl';
+
 
 const EnergyDashboard: React.FC = () => {
+  const contentRef = useRef<HTMLDivElement | null>(null);
+
+  const [selectedRange, setSelectedRange] = useState<RangeKey>('5m');
+  const [selectedRangeLabel, setSelectedRangeLabel] = useState('5 min');
+  const [customRange, setCustomRange] = useState<CustomRange | null>(null);
+
+  const handleSelectRange = (
+    value: string,
+    label: string,
+    selectedCustomRange?: CustomRange,
+  ) => {
+    setSelectedRange(value as RangeKey);
+    setSelectedRangeLabel(label);
+    setCustomRange(value === 'custom' && selectedCustomRange ? selectedCustomRange : null);
+  };
+
   return (
     <IonPage>
       <IonHeader>
@@ -20,10 +40,25 @@ const EnergyDashboard: React.FC = () => {
             <IonMenuButton color="primary" />
           </IonButtons>
           <IonTitle>Energy Consumption</IonTitle>
+          <PdfDownloadControl
+            pageTitle="Energy Consumption"
+            selectedRange={selectedRange}
+            onSelectRange={handleSelectRange}
+            contentRef={contentRef}
+          />
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <EnergyConsumption />
+        <div ref={contentRef}>
+          <EnergyConsumption
+            selectedRange={selectedRange}
+            selectedRangeLabel={selectedRangeLabel}
+            customRange={customRange}
+            onSelectRange={handleSelectRange}
+            showRangeButton={true}
+            showRangeModal={true}
+          />
+        </div>
       </IonContent>
     </IonPage>
   );
