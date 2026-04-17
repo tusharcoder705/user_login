@@ -18,7 +18,6 @@ import {
   warningOutline,
   barChartOutline,
   logOutOutline,
-  homeOutline,
   analyticsOutline,
   timerOutline,
   constructOutline
@@ -108,8 +107,8 @@ const AppMenu: React.FC = () => {
     <IonMenu contentId="main" type="overlay">
       <IonContent>
         <div className="menu-header">
-          <IonIcon icon={homeOutline} className="menu-home-icon" />
-          <IonLabel className="menu-title-main">Energy Dashboard</IonLabel>
+          <img src="/OEE.png" alt="OEE logo" className="menu-logo" />
+          <IonLabel className="menu-title-main">OEE</IonLabel>
         </div>
 
         <IonList className="menu-content-list" lines="none">
